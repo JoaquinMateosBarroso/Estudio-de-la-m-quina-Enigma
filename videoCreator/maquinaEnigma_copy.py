@@ -10,7 +10,7 @@ class Rotor:
         self.cadenaDerecha = cadenaDerecha
         self.cadenaIzquierda = cadenaIzquierda
         
-    def transformarDerechaIzquierda(self, letra: str, verbose: bool) -> str:
+    def transformarDerechaIzquierda(self, letra: str, verbose: bool = False) -> str:
         '''
             Transforma la letra dada por la letra correspondiente en la cadenaIzquierda
         
@@ -22,7 +22,7 @@ class Rotor:
         
         return self.cadenaIzquierda[self.cadenaDerecha.index(letra)]
     
-    def transformarIzquierdaDerecha(self, letra: str, verbose: bool) -> str:
+    def transformarIzquierdaDerecha(self, letra: str, verbose: bool = False) -> str:
         '''
             Transforma la letra dada por la letra correspondiente en la cadenaDerecha
         
@@ -97,7 +97,7 @@ class MaquinaEnigma:
         for i, rotor in list(enumerate(self.rotores))[::-1]:
             letra = rotor.transformarIzquierdaDerecha(letra, self.verbose)
             if i != len(self.rotores) - 1:
-                letra = self.moverEntreRotores(letra, i, i-1)
+                letra = self.moverEntreRotores(letra, len(self.rotores)-i-1, len(self.rotores)-i-2)
             
         self.rotar()
         
@@ -125,16 +125,12 @@ def maquinaRandom():
     reordenAleatorio = random.sample(abecedario, len(abecedario))
     reflector = Reflector([(reordenAleatorio[i], reordenAleatorio[i+1]) for i in range(0, len(reordenAleatorio), 2)])
     
-    maquina = MaquinaEnigma([rotor1, rotor2, rotor3], reflector, verbose=False)
+    maquina = MaquinaEnigma([rotor1, rotor2, rotor3], reflector, verbose=True)
     
     return maquina
 
 
 if __name__ == '__main__':
     maquina = maquinaRandom()
-    letra = maquina.transformar('A')
-    i = 1
-    while letra != 'A':
-        letra = maquina.transformar(letra)
-        i+=1
-    print(i)
+    letra = maquina.transformar('J')
+    print(letra)

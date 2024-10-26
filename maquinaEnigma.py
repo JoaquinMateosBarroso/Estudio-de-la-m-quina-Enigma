@@ -1,3 +1,5 @@
+import sys
+
 
 class Rotor:
     def __init__(self, cadenaDerecha: list[str], cadenaIzquierda: list[str]):
@@ -10,7 +12,7 @@ class Rotor:
         self.cadenaDerecha = cadenaDerecha
         self.cadenaIzquierda = cadenaIzquierda
         
-    def transformarDerechaIzquierda(self, letra: str, verbose: bool) -> str:
+    def transformarDerechaIzquierda(self, letra: str, verbose: bool = False) -> str:
         '''
             Transforma la letra dada por la letra correspondiente en la cadenaIzquierda
         
@@ -22,7 +24,7 @@ class Rotor:
         
         return self.cadenaIzquierda[self.cadenaDerecha.index(letra)]
     
-    def transformarIzquierdaDerecha(self, letra: str, verbose: bool) -> str:
+    def transformarIzquierdaDerecha(self, letra: str, verbose: bool = False) -> str:
         '''
             Transforma la letra dada por la letra correspondiente en la cadenaDerecha
         
@@ -38,8 +40,8 @@ class Rotor:
         '''
             Rota el rotor
         '''
-        self.cadenaDerecha = self.cadenaDerecha[1:] + list(self.cadenaDerecha[0])
-        self.cadenaIzquierda = self.cadenaIzquierda[1:] + list(self.cadenaIzquierda[0])
+        self.cadenaDerecha = self.cadenaDerecha[1:] + [self.cadenaDerecha[0]]
+        self.cadenaIzquierda = self.cadenaIzquierda[1:] + [self.cadenaIzquierda[0]]
 
 
 class Reflector:
@@ -87,6 +89,7 @@ class MaquinaEnigma:
         '''
             Dada una letra, la transforma a través de los rotores y el reflector
         '''
+        letra = letra.upper()
         for i, rotor in enumerate(self.rotores):
             letra = rotor.transformarDerechaIzquierda(letra, self.verbose)
             if i != len(self.rotores) - 1:
@@ -94,15 +97,22 @@ class MaquinaEnigma:
             
         letra = self.reflector.transformar(letra)
         
-        for i, rotor in list(enumerate(self.rotores))[::-1]:
+        for i, rotor in enumerate(self.rotores[::-1]):
             letra = rotor.transformarIzquierdaDerecha(letra, self.verbose)
             if i != len(self.rotores) - 1:
-                letra = self.moverEntreRotores(letra, i, i-1)
+                letra = self.moverEntreRotores(letra, len(self.rotores)-i-1, len(self.rotores)-i-2)
             
         self.rotar()
         
         return letra
     
+    def transformarFrase(self, frase: str) -> str:
+        respuesta = ''
+        for letra in frase:
+            letra = maquina.transformar(letra)
+            respuesta += letra
+        return f'E({frase}) = {respuesta}'
+        
     def rotar(self):
         '''
             Rota los rotores
@@ -112,6 +122,17 @@ class MaquinaEnigma:
             # Solamente rotar el siguiente rotor si el rotor actual ha dado una vuelta completa
             if rotor.cadenaDerecha[0] != 'A':
                 break
+    def __str__(self):
+        text = ''
+        for i, rotor in enumerate(maquina.rotores):
+            text += f'Rotor {i}\n' + \
+                    f'\tDer -> {rotor.cadenaDerecha}\n' + \
+                    f'\tIzq -> {rotor.cadenaIzquierda}\n'
+                    
+        text += 'Reflector:' + \
+                f'\t{maquina.reflector.pares}\n'
+                
+        return text
             
 
 import random
@@ -132,9 +153,40 @@ def maquinaRandom():
 
 if __name__ == '__main__':
     maquina = maquinaRandom()
-    letra = maquina.transformar('A')
-    i = 1
-    while letra != 'A':
-        letra = maquina.transformar(letra)
-        i+=1
-    print(i)
+    print(str(maquina))
+    if len(sys.argv) > 1:
+        if sys.argv[1] == '-i': # Modo interactivo
+            while True:
+                frase = input('Introduce una frase: ')
+                print(maquina.transformarFrase(frase))
+                
+        elif sys.argv[1] == '-g': # Modo gráfico
+            import tkinter as tk
+            from tkinter import font
+            ventana = tk.Tk()
+            ventana.title("Transformador Enigma")
+            etiqueta_instruccion = tk.Label(ventana, text="Introduce una frase:", font=font.Font(size=20))
+            ventana.geometry('500x300')
+            etiqueta_instruccion.pack()
+            
+            font_large = font.Font(family='Times', size=20)
+
+            entrada_frase = tk.Entry(ventana, width=50, font=font_large)
+            entrada_frase.pack()
+
+            def transformarFrase_grafico():
+                frase = entrada_frase.get()
+                resultado = maquina.transformarFrase(frase)
+                etiqueta_resultado.config(text=resultado)
+            
+            boton_transformar = tk.Button(ventana, text="Transformar", command=transformarFrase_grafico, font=font_large)
+            boton_transformar.pack()
+
+            etiqueta_resultado = tk.Label(ventana, text="E() = ", font=font_large)
+            etiqueta_resultado.pack()
+
+            # Ejecutar la interfaz gráfica
+            ventana.mainloop()
+    else:
+        frase = 'HOLA'
+        print(maquina.transformarFrase(frase))
