@@ -398,11 +398,11 @@ Alan Turing, siguiendo la idea de las \textit{cadenas de Rejewski}, definió los
 			\item Una vez se tiene la estructura interna, al igual que con Rejewski, se prueban cableados hasta encontrar el correcto. \pause
 		\end{enumerate}
 	\end{block} \pause
-	Con este sistema se consiguió descifrar Enigma, y se salvaron miles de vidas.
+	Con este sistema se consiguió descifrar Enigma, y se salvaron miles de vidas.\\
+	El mismo proceso (sin cableados) se puede emular ejecutando \textit{descubrirLoopsDeTuring.py} y \textit{bombe.py}.
 \end{frame}
 
 \begin{frame}
-	
 	\begin{columns}
 		\begin{column}{0.6\linewidth}
 			A lo largo de la guerra se siguieron produciendo pequeños cambios en el sistema alemán, cuando iban dándose cuenta de que los descubrían.\\
@@ -424,6 +424,67 @@ Alan Turing, siguiendo la idea de las \textit{cadenas de Rejewski}, definió los
 
 % Results --- --- --- --- --- --- --- --- --- --- --- 
 \section{Codificación teórica mediante la Máquina de Turing}
+\begin{frame}{Problemas indecidibles}
+	\textbf{Definición.} Un problema es una cuestión acerca de si una cadena pertenece a un lengüaje (consultar \cite{vazquez2022introduccion} para profundizar).\\\vspace{12pt}
+	\textbf{Definición.} Se dice que un problema es \textbf{indecidible} si no existe ningún algoritmo capaz de dar la salida del problema para cualquier entrada.\\\vspace{12pt}
+	Dado que el número de lengüajes definibles sobre cualquier alfabeto es no numerable (por ser el conjunto de las particiones de un conjunto numerable), hay una cantidad no numerable de problemas.\\
+	Como el número de algoritmos es numerable (por poder escribirse como una consecución de caracteres), entonces existe una cantidad numerable de problemas decidibles (explicación extendida en \cite{vazquez2022introduccion}, 8.1.2).\\\vspace{12pt}
+	Como consecuencia, existe una \textbf{cantidad no numerable} de \textbf{problemas indecidibles}.
+\end{frame}
+
+\begin{frame}{Máquina de Turing}
+Para poder trabajar con problemas indecidibles, Turing definió una \textbf{Máquina de Turing }como una tupla:
+$$M = (Q, \Sigma, \Gamma, \delta, q_0, \epsilon, F)$$
+Donde:
+\begin{itemize}
+	\item $Q$ es el conjunto de todos los estados.\pause
+	\item $\Gamma$ es el alfabeto (finito) de cinta.\pause
+	\item $\Sigma\subseteq\Gamma$ es el alfabeto de entrada.\pause
+	\item $\delta:Q\times \Gamma \rightarrow Q\times \Gamma \times \{I, D\}$ es la aplicación de transición, que indica el nuevo estado y la dirección hacia la que se mueve la cinta.\pause
+	\item $q_0\in Q$ es el estado inicial.\pause
+	\item $\epsilon$ es la palabra vacía.\pause
+	\item $F$ es el conjunto de estados finales.	\pause
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Ejecución de una Máquina de Turing}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\linewidth]{"pic/Ejecución Máquina de Turing"}
+\end{figure}
+
+\end{frame}
+
+
+\begin{frame}{Lenguajes definidos por Turing}
+\textbf{Lenguaje generado por una máquina de Turing $M$} es
+$$L(M) := \{w\in \Sigma^*| q_0w\vdash^*\alpha p \beta, \text{ siendo } p\in F,\; \alpha, \beta \in \Gamma^*\}$$\pause
+Un lenguaje $L$ es \textbf{recursvamente enumerable} si existe alguna máquina de Turing, $M$, t.q. $L = L(M)$.\\\vspace{12pt}\pause
+Un lenguaje $L$ es \textbf{recursivo}, o \textbf{decidible}, si existe alguna máquina de Turing $M$, que se para en un tiempo finito, t.q. $L=L(M)$.
+\end{frame}
+
+\begin{frame}{Máquina de Turing Universal}
+	La \textbf{Máquina de Turing Universal} es aquella que tiene como lenguaje, $L(U)$, el conjunto de cadenas binarias que codifican, cada una, una máquina de Turing binaria y un alfabeto de entrada.\\\vspace{12pt}\pause
+	Esta máquina puede verse como la \textit{máquina que resuelve todo problema computable} (mediante una máquina de Turing).\\\vspace{12pt}\pause
+	Alan Turing demostró que $L(U)$ es \textit{recursivamente enumerable}, es decir, que existe la Máquina de Turing Universal, pero no es \textit{decidible}, es decir, que esta máquina no se pararía en un tiempo finito.
+\end{frame}
+
+\begin{frame}{Consecuencias de la Máquina de Turing}
+	\begin{block}{Consecuencias de la Máquina de Turing}
+		\begin{itemize}
+			\item Esta máquina asentó las bases de la computación moderna, y aún hoy en día se analiza si un lenguaje es \textbf{Turing-completo}, i.e., si puede emular la Máquina de Turing Universal.\pause
+			\item Gracias a su modelado teórico resolvió el \textit{Entscheidungsproblem}, demostrando que NO existe ningún algoritmo que compruebe si una frase cualquiera es un teorema. Por lo tanto, no se tiene solamente que haya enunciados indecidibles, como demostró Gödel, sino que ni si quiera podemos saber si alguno de los problemas con los que se enfrentan los matemáticos son decidibles.
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+% Bibliografía
+\begin{frame}{Referencias}
+	\nocite{*}
+	\bibliographystyle{plain}
+	\bibliography{bibliography}
+\end{frame}
 
 % --- Thank you slide ---
 \begin{frame}
