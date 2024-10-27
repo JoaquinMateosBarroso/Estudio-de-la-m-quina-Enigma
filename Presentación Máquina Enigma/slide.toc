@@ -1,0 +1,5 @@
+\babel@toc {spanish}{}\relax 
+\beamer@sectionintoc {1}{Contexto criptográfico}{3}{0}{1}
+\beamer@sectionintoc {2}{La Máquina Enigma}{16}{0}{2}
+\beamer@sectionintoc {3}{Descifrando Enigma}{42}{0}{3}
+\beamer@sectionintoc {4}{Codificación teórica mediante la Máquina de Turing}{73}{0}{4}

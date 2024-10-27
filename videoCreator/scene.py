@@ -1,25 +1,30 @@
 from manim import *
 from aux import *
 from maquinaEnigma_copy import *
-from parametros import fraseIntroducida
+from parametros import fraseIntroducida, abecedario
 
 class EnigmaMachineTransformation(Scene):
     def crearRotor(self, rotor: Rotor, position):
         letrasDerecha = rotor.cadenaDerecha
         verticesDerecha = VGroup()
+        # Dibujamos las letras de la derecha
         for i, letra in enumerate(letrasDerecha):
             letra = Text(letra, font_size=14).shift(DOWN * 0.25*i + RIGHT * 0.5)
             circunferencia = Circle(radius=0.15, color=WHITE).move_to(letra.get_center())
             verticesDerecha.add(VGroup(letra, circunferencia))
         
         verticesIzquierda = VGroup()
-        for i, letra in enumerate(rotor.cadenaIzquierda):
+        # Dibujamos las letras de la izquierda
+        for i, letra in enumerate(letrasDerecha):
             letra = Text(letra, font_size=14).shift(DOWN * 0.25*i + LEFT * 0.5)
             circunferencia = Circle(radius=0.12, color=WHITE).move_to(letra.get_center())
             verticesIzquierda.add(VGroup(letra, circunferencia))
         
         aristas = VGroup()
-        for derecha, izquierda in zip(verticesDerecha, verticesIzquierda):
+        # Dibujamos las aristas
+        for derecha in verticesDerecha:
+            letraIzquierda = rotor.transformarDerechaIzquierda(derecha[0].text)
+            izquierda = verticesIzquierda[rotor.cadenaDerecha.index(letraIzquierda)]
             linea = Line(derecha[1].get_center()+0.1*LEFT, izquierda[1].get_center()+0.1*RIGHT, color=WHITE)
             aristas.add(linea)
         
@@ -45,7 +50,6 @@ class EnigmaMachineTransformation(Scene):
     
     
     def dibujarReflector(self, reflector: Reflector):
-        abecedario = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
         nodos = VGroup()
         for i, letra in enumerate(abecedario):
             letra = Text(letra, font_size=14).shift(DOWN * 0.25*i)
@@ -87,12 +91,13 @@ class EnigmaMachineTransformation(Scene):
             verticesIzquierda = rotorGrafico[1]
             aristas = rotorGrafico[2]
             
-            indice = rotor.cadenaDerecha.index(letra)
+            indiceDerecha = rotor.cadenaDerecha.index(letra)
+            indiceIzquierda = rotor.cadenaDerecha.index(rotor.transformarDerechaIzquierda(letra))
             
             # Aquí cambiamos el color de los elementos, de derecha a izquierda
-            self.play(Transform(verticesDerecha[indice][1], verticesDerecha[indice][1].copy().set_color(GREEN)))
-            self.play(Transform(aristas[indice], aristas[indice].copy().set_color(GREEN)))
-            self.play(Transform(verticesIzquierda[indice][1], verticesIzquierda[indice][1].copy().set_color(GREEN)))
+            self.play(Transform(verticesDerecha[indiceDerecha][1], verticesDerecha[indiceDerecha][1].copy().set_color(GREEN)))
+            self.play(Transform(aristas[indiceDerecha], aristas[indiceDerecha].copy().set_color(GREEN)))
+            self.play(Transform(verticesIzquierda[indiceIzquierda][1], verticesIzquierda[indiceIzquierda][1].copy().set_color(GREEN)))
             
             # Aquí cambiamos la letra
             letra = rotor.transformarDerechaIzquierda(letra)
@@ -123,15 +128,17 @@ class EnigmaMachineTransformation(Scene):
             verticesIzquierda = rotorGrafico[1]
             aristas = rotorGrafico[2]
             
-            indice = rotor.cadenaIzquierda.index(letra)
+            indiceIzquierda = rotor.cadenaDerecha.index(letra)
+            letraTransformada = rotor.transformarIzquierdaDerecha(letra)
+            indiceDerecha = rotor.cadenaDerecha.index(letraTransformada)
             
             # Aquí cambiamos el color de los elementos, de derecha a izquierda
-            self.play(Transform(verticesIzquierda[indice][1], verticesIzquierda[indice][1].copy().set_color(GREEN)))
-            self.play(Transform(aristas[indice], aristas[indice].copy().set_color(GREEN)))
-            self.play(Transform(verticesDerecha[indice][1], verticesDerecha[indice][1].copy().set_color(GREEN)))
+            self.play(Transform(verticesIzquierda[indiceIzquierda][1], verticesIzquierda[indiceIzquierda][1].copy().set_color(GREEN)))
+            self.play(Transform(aristas[indiceDerecha], aristas[indiceDerecha].copy().set_color(GREEN)))
+            self.play(Transform(verticesDerecha[indiceDerecha][1], verticesDerecha[indiceDerecha][1].copy().set_color(GREEN)))
             
             # Aquí cambiamos la letra
-            letra = rotor.transformarIzquierdaDerecha(letra)
+            letra = letraTransformada
             # Si no hemos llegado al último rotor, movemos entre rotores
             if i < len(self.maquina.rotores) - 1:
                 letra = self.maquina.moverEntreRotores(letra, len(self.maquina.rotores)-i-1, len(self.maquina.rotores)-i-2)

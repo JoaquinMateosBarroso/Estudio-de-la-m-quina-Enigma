@@ -1,5 +1,9 @@
 import sys
+def charToInt(char):
+    return ord(char) - ord('A')
 
+def intToChar(n: int):
+    return chr(ord('A')+n)
 
 class Rotor:
     def __init__(self, cadenaDerecha: list[str], cadenaIzquierda: list[str]):
@@ -42,6 +46,9 @@ class Rotor:
         '''
         self.cadenaDerecha = self.cadenaDerecha[1:] + [self.cadenaDerecha[0]]
         self.cadenaIzquierda = self.cadenaIzquierda[1:] + [self.cadenaIzquierda[0]]
+    
+    def clone(self):
+        return Rotor(self.cadenaDerecha.copy(), self.cadenaIzquierda.copy())
 
 
 class Reflector:
@@ -76,14 +83,13 @@ class MaquinaEnigma:
         '''
             Mueve la letra entre dos rotores. Rotor 1 es el de origen y Rotor 2 es el de destino
         '''
-        rotor1 = self.rotores[rotor1_index]
         rotor2 = self.rotores[rotor2_index]
         if rotor1_index < rotor2_index:
             # Movemos de derecha a izquierda
-            return rotor2.cadenaDerecha[rotor1.cadenaIzquierda.index(letra)]
+            return rotor2.cadenaDerecha[charToInt(letra)]
         else:
             # Movemos de izquierda a derecha
-            return rotor2.cadenaIzquierda[rotor1.cadenaDerecha.index(letra)]
+            return rotor2.cadenaIzquierda[charToInt(letra)]
     
     def transformar(self, letra: str) -> str:
         '''
@@ -109,7 +115,7 @@ class MaquinaEnigma:
     def transformarFrase(self, frase: str) -> str:
         respuesta = ''
         for letra in frase:
-            letra = maquina.transformar(letra)
+            letra = self.transformar(letra)
             respuesta += letra
         return f'E({frase}) = {respuesta}'
         
@@ -122,17 +128,21 @@ class MaquinaEnigma:
             # Solamente rotar el siguiente rotor si el rotor actual ha dado una vuelta completa
             if rotor.cadenaDerecha[0] != 'A':
                 break
+
     def __str__(self):
         text = ''
-        for i, rotor in enumerate(maquina.rotores):
+        for i, rotor in enumerate(self.rotores):
             text += f'Rotor {i}\n' + \
                     f'\tDer -> {rotor.cadenaDerecha}\n' + \
                     f'\tIzq -> {rotor.cadenaIzquierda}\n'
                     
         text += 'Reflector:' + \
-                f'\t{maquina.reflector.pares}\n'
+                f'\t{self.reflector.pares}\n'
                 
         return text
+    
+    def clone(self):
+        return MaquinaEnigma([rotor.clone() for rotor in self.rotores], self.reflector, self.verbose)
             
 
 import random
@@ -150,10 +160,13 @@ def maquinaRandom():
     
     return maquina
 
-
+rotacionesIniciales = 0
 if __name__ == '__main__':
     maquina = maquinaRandom()
-    print(str(maquina))
+    
+    for i in range(rotacionesIniciales):
+        maquina.rotar()
+        
     if len(sys.argv) > 1:
         if sys.argv[1] == '-i': # Modo interactivo
             while True:
@@ -174,13 +187,23 @@ if __name__ == '__main__':
             entrada_frase = tk.Entry(ventana, width=50, font=font_large)
             entrada_frase.pack()
 
+            
+            copiaMaquina = maquina.clone()
             def transformarFrase_grafico():
                 frase = entrada_frase.get()
                 resultado = maquina.transformarFrase(frase)
                 etiqueta_resultado.config(text=resultado)
             
+            def reiniciarMaquina():
+                global maquina
+                maquina = copiaMaquina.clone()
+                print('Máquina reiniciada')
+            
             boton_transformar = tk.Button(ventana, text="Transformar", command=transformarFrase_grafico, font=font_large)
             boton_transformar.pack()
+            
+            boton_reiniciar = tk.Button(ventana, text="Reiniciar Máquina", command=reiniciarMaquina, font=font_large)
+            boton_reiniciar.pack()
 
             etiqueta_resultado = tk.Label(ventana, text="E() = ", font=font_large)
             etiqueta_resultado.pack()
