@@ -72,18 +72,21 @@ class Reflector:
 
 
 class MaquinaEnigma:
-    def __init__(self, rotores: list[Rotor], reflector: Reflector, verbose: bool=False):
+    def __init__(self, rotores: list[Rotor], reflector: Reflector, verbose: bool=False, visualmenteEntendible=True):
         '''
         '''
         self.rotores = rotores
         self.reflector = reflector
         self.verbose = verbose
+        self.visualemnteEntendible = visualmenteEntendible
     
-    def moverEntreRotores(self, letra: str, rotor1_index: int, rotor2_index: int) -> str:
+    def moverEntreRotoresParaDescifrar(self, letra: str, rotor1_index: int, rotor2_index: int) -> str:
         '''
-            Mueve la letra entre dos rotores. Rotor 1 es el de origen y Rotor 2 es el de destino
+            Mueve la letra entre dos rotores. Rotor 1 es el de origen y Rotor 2 es el de destino.
+            Esta es una versión que no es exactamente igual a la que se ve, pero más sencilla de descifrar.
         '''
         rotor2 = self.rotores[rotor2_index]
+        # Notar que aquí usamos la cadena derecha siempre porque es ella la que indica la altura de las letras
         if rotor1_index < rotor2_index:
             # Movemos de derecha a izquierda
             return rotor2.cadenaDerecha[charToInt(letra)]
@@ -91,10 +94,24 @@ class MaquinaEnigma:
             # Movemos de izquierda a derecha
             return rotor2.cadenaIzquierda[charToInt(letra)]
     
+    def moverEntreRotores(self, letra: str, rotor1_index: int, rotor2_index: int) -> str:
+        '''
+            Mueve la letra entre dos rotores. Rotor 1 es el de origen y Rotor 2 es el de destino.
+            Este es distinto, porque se ha hecho para que sea más visualmente comprensible.
+        '''
+        if not self.visualemnteEntendible:
+            return self.moverEntreRotoresParaDescifrar(letra, rotor1_index, rotor2_index)
+        
+        rotor1 = self.rotores[rotor1_index]
+        rotor2 = self.rotores[rotor2_index]
+        # Notar que aquí usamos la cadena derecha siempre porque es ella la que indica la altura de las letras
+        return rotor2.cadenaDerecha[rotor1.cadenaDerecha.index(letra)]
+    
     def transformar(self, letra: str) -> str:
         '''
             Dada una letra, la transforma a través de los rotores y el reflector
         '''
+        
         letra = letra.upper()
         for i, rotor in enumerate(self.rotores):
             letra = rotor.transformarDerechaIzquierda(letra, self.verbose)
@@ -142,21 +159,25 @@ class MaquinaEnigma:
         return text
     
     def clone(self):
-        return MaquinaEnigma([rotor.clone() for rotor in self.rotores], self.reflector, self.verbose)
+        return MaquinaEnigma([rotor.clone() for rotor in self.rotores], self.reflector, self.verbose, self.visualemnteEntendible)
             
 
 import random
-def maquinaRandom():    
+def maquinaRandom(**kwargs):    
     random.seed(0)
     abecedario = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
     rotor1 = Rotor(abecedario.copy(), random.sample(abecedario, len(abecedario)))
     rotor2 = Rotor(abecedario.copy(), random.sample(abecedario, len(abecedario)))
     rotor3 = Rotor(abecedario.copy(), random.sample(abecedario, len(abecedario)))
     
+    rotor1 = Rotor(random.sample(abecedario, len(abecedario)), random.sample(abecedario, len(abecedario)))
+    rotor2 = Rotor(random.sample(abecedario, len(abecedario)), random.sample(abecedario, len(abecedario)))
+    rotor3 = Rotor(random.sample(abecedario, len(abecedario)), random.sample(abecedario, len(abecedario)))
+    
     reordenAleatorio = random.sample(abecedario, len(abecedario))
     reflector = Reflector([(reordenAleatorio[i], reordenAleatorio[i+1]) for i in range(0, len(reordenAleatorio), 2)])
     
-    maquina = MaquinaEnigma([rotor1, rotor2, rotor3], reflector, verbose=False)
+    maquina = MaquinaEnigma([rotor1, rotor2, rotor3], reflector, verbose=False, **kwargs)
     
     return maquina
 

@@ -53,10 +53,12 @@ class Bombe:
 
     
 if __name__ == '__main__':
-    maquinaBase = maquinaRandom()
+    maquinaBase = maquinaRandom(visualmenteEntendible=False)
     bombe = Bombe(maquinaBase)
-    maquinasValidas = bombe.descubrirPosicionRotores([[(2, 'G'), (3, 'Z'), (4, 'J')],
-                                                      [(2, 'H')]])
+    maquinasValidas = bombe.descubrirPosicionRotores([])
+    
+    # from descubrirLoopsDeTuring import descubrirLoopsDeTuring
+    # maquinasValidas = bombe.descubrirPosicionRotores(descubrirLoopsDeTuring(maquinaBase))
     
     for rotaciones, maquina in maquinasValidas:
         print(f'Rotaciones realizadas: {rotaciones}')

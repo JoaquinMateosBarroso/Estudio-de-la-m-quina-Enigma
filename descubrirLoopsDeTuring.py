@@ -35,7 +35,7 @@ def descubrirLoopsDeTuring(maquinaOriginal: MaquinaEnigma):
 
 if __name__ == '__main__':
     from maquinaEnigma import rotacionesIniciales
-    maquinaBase = maquinaRandom()
+    maquinaBase = maquinaRandom(visualmenteEntendible=False)
     for i in range(rotacionesIniciales):
         maquinaBase.rotar()
         

@@ -86,13 +86,8 @@ class MaquinaEnigma:
         '''
         rotor1 = self.rotores[rotor1_index]
         rotor2 = self.rotores[rotor2_index]
-        # Notar que aquí usamos la cadena derecha siempre porque es ella la que indica la altura de las letras
-        if rotor1_index < rotor2_index:
-            # Movemos de derecha a izquierda
-            return rotor2.cadenaDerecha[rotor1.cadenaDerecha.index(letra)]
-        else:
-            # Movemos de izquierda a derecha
-            return rotor2.cadenaDerecha[rotor1.cadenaDerecha.index(letra)]
+        # Notar que aquí usamos la cadena derecha siempre porque es ella la que indica la altura de las letra
+        return rotor2.cadenaDerecha[rotor1.cadenaDerecha.index(letra)]
     
     def transformar(self, letra: str) -> str:
         '''
@@ -214,5 +209,5 @@ if __name__ == '__main__':
             # Ejecutar la interfaz gráfica
             ventana.mainloop()
     else:
-        frase = 'HOLA'
+        frase = 'JCKW'
         print(maquina.transformarFrase(frase))
